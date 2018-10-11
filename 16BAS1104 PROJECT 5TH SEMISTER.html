@@ -1,0 +1,164 @@
+<HTML>
+
+<!-- Mirrored from www.ae.su.oz.au/aero/oblique/index.html by HTTrack Website Copier/3.x [XR&CO'2005], Fri, 28 Apr 2006 19:36:37 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=iso-8859-1"><!-- /Added by HTTrack -->
+<HEAD>Theta-Beta-Mach.js</HEAD>
+<TITLE> 5`TH semister project</TITLE>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--Oblique Shock Wave calculations
+
+function ResetForm() {
+   document.forms[0].M1.value = "1.0";  <!-- for normal shock --!>
+   document.forms[0].delta.value = "0.0";
+}
+
+function Compute() {
+  var delta = document.forms[0].delta.value;
+  var M1 = document.forms[0].M1.value;
+
+  var t1 = 0.0;
+  var d0 = delta/180.0*3.141596; 
+  var a1 = 2.0*Math.cos(t1)/Math.sin(t1);
+  var a2 = M1*M1*Math.sin(t1)*Math.sin(t1) - 1.0;
+  var a3 = 2.0 + (1.4 + Math.cos(2.0*t1))*M1*M1;
+  var d1 = Math.atan(a1*a2/a3);
+  var e1 = d0-d1;
+  var t2 = 20.0/180.0*3.1415925;
+  var a1 = 2.0*Math.cos(t2)/Math.sin(t2);
+  var a2 = M1*M1*Math.sin(t2)*Math.sin(t2) - 1.0;
+  var a3 = 2.0 + (1.4 + Math.cos(2.0*t2))*M1*M1;
+  var d2 = Math.atan(a1*a2/a3);
+  var e2 = d0-d2;
+  var count = 1;
+  while (Math.abs(e2) > 1.0e-5) {
+   var count = count+1;
+   var a1 = (e2 - e1)/(t2 - t1);
+   var a2 = e2 - a1*t2;
+   var t1 = t2;
+   var t2 = - a2/a1;
+   var e1 = e2;
+   var a1 = 2.0*Math.cos(t2)/Math.sin(t2);
+   var a2 = M1*M1*Math.sin(t2)*Math.sin(t2) - 1.0;
+   var a3 = 2.0 + (1.4 + Math.cos(2.0*t2))*M1*M1;
+   var d2 = Math.atan(a1*a2/a3);
+   var e2 = d0-d2;
+  
+   if (count > 100) {
+    document.forms[1].theta.value = "detached";
+    document.forms[1].M2.value = " ";
+    document.forms[1].p21.value = " ";
+    return;
+   }
+  }
+  
+  var theta = t2*180.0/3.1415926
+  document.forms[1].theta.value = theta;
+  var a1 = M1*Math.sin(t2);
+  var a2 = Math.sqrt((0.4*a1*a1 + 2.0)/(2.8*a1*a1 -0.4));
+  var M2 = a2/(Math.sin(t2-d0));
+  document.forms[1].M2.value = M2;
+
+  var p21 = (2.8*a1*a1 - 0.4)/2.4;
+  
+  document.forms[1].p21.value = p21;
+
+  roundAll();
+}
+
+// Rounding
+
+function roundAll(){
+
+   document.forms[0].M1.value = truncNum(document.forms[0].M1.value,9)
+   document.forms[0].delta.value = truncNum(document.forms[0].delta.value,7)
+
+   document.forms[1].theta.value =truncNum(document.forms[1].theta.value,7)
+   document.forms[1].M2.value =truncNum(document.forms[1].M2.value,7)
+   document.forms[1].p21.value =truncNum(document.forms[1].p21.value,7)
+   return;
+}
+
+function truncNum(inputVal, rsize) {
+   var instr = " " + inputVal
+   var inputlength = instr.length
+   if (inputlength<=rsize+1) return instr.substring(1, inputlength);
+   var epos = strpos(instr, "e")
+   if ( epos > rsize+1) {
+     var instr1 = instr.substring(1,rsize+1) + instr.substring(epos,inputlength);
+     return instr1;
+   }
+   var rounded = instr.substring(1, rsize+1);
+   return rounded;
+}
+
+function strpos(str, ch) {
+   for (var i = 0; i < str.length; i++)
+      if (str.substring(i, i+1) == ch) return i;
+   return -1;
+}
+  
+  // end hiding from old browsers -->
+
+</SCRIPT>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face='Helvetica, San-serif' size=2>
+<center>
+<table width=700 border=1 cellpadding=10 bgcolor="#7777ff">
+<tr><td>
+<B>Oblique Shock Calculations Dhairya D. Dosi</B><br>
+&nbsp;<br>
+This form calculates properties of air flow through an oblique shock wave.
+The required input is the Mach number of the upstream flow and the wedge
+angle. The gas is assumed to be ideal air.<br>
+&nbsp;<br><a href="obtable.html">16BAS1104</a>
+</td><td align=center bgcolor="#FFFFFF"><img src="oblique.gif"></td></tr>
+<tr><td>
+<B>Inputs</B><br>
+<form name="inputs">
+<table>
+<tr>
+<td>Upstream Mach Number (M1)</td></tr><tr>
+<td><INPUT NAME="M1" TYPE=text VALUE="2.0" SIZE=15><br>&nbsp;</td>
+</tr>
+<tr>
+<td>Wedge Angle, (delta)(Degrees)</td></tr><tr>
+<td><INPUT NAME="delta" TYPE="text"  VALUE="0.0" SIZE="15"><br>&nbsp;</td>
+</tr>
+</table>
+<BR>
+<hr>
+<center>
+<INPUT NAME="name" TYPE="button" VALUE="Compute" onClick="Compute()">
+<INPUT NAME="name" TYPE="button" VALUE="Reset" onClick="ResetForm()">
+</center>
+</form>
+</td><td valign=top>
+<B>Results</B><br>
+<form name = "results">
+<table>
+<tr><td>Downstream Mach Number (M2)</td></tr><tr>
+<td><INPUT NAME="M2" TYPE="text" SIZE="15"><br>&nbsp;</td>
+</tr>
+<tr><td>Oblique Wave Angle (theta)(Degrees)</td></tr><tr>
+<td><INPUT NAME="theta" TYPE="text" SIZE="15"><br>&nbsp;</td>
+</tr>
+<tr><td>Static pressure ratio (P2/P1)</td></tr><tr>
+<td><INPUT NAME="p21" TYPE="text" SIZE="15"><br>&nbsp;</td>
+</tr>
+</table>
+</form>
+</td></tr>
+</table>
+</font>
+<br><font size=1> (c) 2018 AMME, Chandigarh University.</font><br>
+</center>
+
+</BODY>
+
+
+<meta http-equiv="content-type" content="text/html;charset=iso-8859-1"><!-- /Added by HTTrack -->
+</HTML>
+
